@@ -1,11 +1,5 @@
 
-console.log('LOADING PRELOAD')
-if (window !== top) {
-    console.log('PRELOAD IN IFRAME')
-    // alert('Preload loaded in iframe')
 
-    window.addEventListener('load', () => {
-        document.body.innerHTML += '<h1>PRELOAD IS WORKING</h1>'
-    })
-
-}
+document.addEventListener('DOMContentLoaded', (ev) => {
+    setTimeout(() => document.querySelector('#btn-open').click(), 0)
+})

@@ -12,14 +12,22 @@ function createWindow () {
   webPreferences: {
     preload: path.join(__dirname , 'preload.js'),
     sandbox: true,
+    nativeWindowOpen: true,
     nodeIntegration: false,
-    nodeIntegrationInSubFrames: true
+    nodeIntegrationInSubFrames: true,
+    offscreen: true,
+    webSecurity: true
   }})
 
-  mainWindow.openDevTools()
+  mainWindow.webContents.on('new-window', (event, url, frameName, disposition, options, additionalFeatures) => {
+    console.warn('new-window', url, frameName, disposition, options, additionalFeatures)
+  })
+
+  // mainWindow.openDevTools()
+
 
   // and load the index.html of the app.
-  mainWindow.loadURL('https://output.jsbin.com/koguqew')
+  mainWindow.loadURL('https://output.jsbin.com/wolulas/')
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

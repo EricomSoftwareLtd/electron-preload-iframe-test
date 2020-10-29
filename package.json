@@ -18,5 +18,8 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^10.1.5"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.28.2"
   }
 }

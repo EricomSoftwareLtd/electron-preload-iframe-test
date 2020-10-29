@@ -5,16 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "electron",
+            "name": "Electron",
             "type": "node",
             "protocol": "inspector",
             "request": "launch",
             "program": "${workspaceRoot}/main.js",
-            "env": {
-            },
             "stopOnEntry": false,
+            "env": {
+                "DISPLAY": ":0"
+            },
             "args": [],
-            "cwd": "${workspaceRoot}",
             "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
             "runtimeArgs": [
                 ".",
@@ -25,6 +25,6 @@
             // "console": "integratedTerminal",
             "outputCapture": "std",
             "sourceMaps": false
-        },
+        }
     ]
 }

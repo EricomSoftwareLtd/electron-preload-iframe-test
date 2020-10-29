@@ -1,67 +1,65 @@
-// Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const { app, BrowserWindow, session } = require('electron')
 const path = require('path')
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function createWindow () {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600,
-  webPreferences: {
-    preload: path.join(__dirname , 'preload.js'),
-    sandbox: true,
-    nativeWindowOpen: true,
-    nodeIntegration: false,
-    nodeIntegrationInSubFrames: true,
-    offscreen: true,
-    webSecurity: true
-  }})
+function createWindow() {
+  session.defaultSession.clearCache(() => { });
 
-  mainWindow.webContents.on('new-window', (event, url, frameName, disposition, options, additionalFeatures) => {
-    console.warn('new-window', url, frameName, disposition, options, additionalFeatures)
+  mainWindow = new BrowserWindow({
+    width: 800, height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      sandbox: true,
+      nativeWindowOpen: true,
+      nodeIntegration: false,
+      nodeIntegrationInSubFrames: true,
+      offscreen: true,
+      webSecurity: true
+    }
   })
 
+
   // mainWindow.openDevTools()
+  /*
+
+   ignore the first few updates !
+
+   expected output (what we get with electron 4):
+    DIRTY  7 { x: 254, y: 254, width: 256, height: 256 }
+    DIRTY  8 { x: 254, y: 254, width: 256, height: 256 }
+    DIRTY  9 { x: 254, y: 254, width: 256, height: 256 }
+    DIRTY  10 { x: 254, y: 254, width: 256, height: 256 }
+    DIRTY  11 { x: 254, y: 254, width: 256, height: 256 }
 
 
-  // and load the index.html of the app.
-  mainWindow.loadURL('https://output.jsbin.com/wolulas/')
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+   output with electron >=5.0.0:
+    DIRTY  9 { x: 0, y: 0, width: 800, height: 575 }
+    DIRTY  10 { x: 0, y: 0, width: 800, height: 575 }
+    DIRTY  11 { x: 0, y: 0, width: 800, height: 575 }
+    DIRTY  12 { x: 0, y: 0, width: 800, height: 575 }
+    DIRTY  13 { x: 0, y: 0, width: 800, height: 575 }
+    DIRTY  14 { x: 0, y: 0, width: 800, height: 575 }
 
-  // Emitted when the window is closed.
+*/
+  mainWindow.loadURL('https://output.jsbin.com/vurotim') // the page is just a div switching between red and blue once every second
+
+  let imgCount = 0;
+  mainWindow.webContents.beginFrameSubscription(true, (nativeImage, dirtyRect) => {
+    console.log('DIRTY ', imgCount++, dirtyRect)
+  })
+
+
   mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     mainWindow = null
   })
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
 
-// Quit when all windows are closed.
 app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
-
-app.on('activate', function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow()
-  }
-})
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

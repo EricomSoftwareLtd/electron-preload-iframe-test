@@ -17,14 +17,16 @@ function createWindow() {
       sandbox: true,
       nativeWindowOpen: true,
       nodeIntegration: false,
+      acceptFirstMouse: true,
+      //nodeIntegration: true,
       nodeIntegrationInSubFrames: true,
-      offscreen: false, // try with and without OFFSCREEN
+      offscreen: true, // try with and without OFFSCREEN
       webSecurity: true
     }
   })
 
-
-  // mainWindow.openDevTools()
+  //mainWindow.addEventListener("click", function(){alert("clicked!");});
+  //mainWindow.openDevTools()
   /*
 
    CDP = chrome devtools protocol
@@ -67,9 +69,9 @@ function createWindow() {
 
     await timeout(500);
     await clickElectronSendInputEvent()
-    // await clickCDP()
+    //await clickCDP()
 
-    await timeout(300)
+    await timeout(3000)
     if (passed) console.log('test PASSED')
     else console.log('test FAILED')
 
@@ -104,17 +106,18 @@ function createWindow() {
   async function clickElectronSendInputEvent() {
     let event = {
       type: 'mouseDown',
-      clickCount: 1,
-      button: 'left',
       x: 200,
       y: 200,
+      button: 'left',
+      clickCount: 1,
       globalX: 200,
       globalY: 200,
       modifiers: ['leftButtonDown']
     };
 
+    mainWindow.focus();
     mainWindow.webContents.sendInputEvent(event);
-    await timeout(0);
+    await timeout(100);
     event.type = 'mouseUp'
     mainWindow.webContents.sendInputEvent(event)
   }

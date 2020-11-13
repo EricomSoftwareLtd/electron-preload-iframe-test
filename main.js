@@ -27,6 +27,8 @@ function createWindow() {
   // mainWindow.openDevTools()
   /*
 
+   CLICK results:
+
    CDP = chrome devtools protocol
    SIE = webContents.sendInputEvent
 
@@ -53,14 +55,17 @@ function createWindow() {
 
 */
 
-  let passed = false;
-
+  let passedClick = false;
+  let passedKeydown = false;
+  let passedKeyup = false;
   mainWindow.loadURL('https://output.jsbin.com/higoxaj') // the page includes an iframe (below). the iframe has a 'click' listeners that sets body background green
   // mainWindow.loadURL('https://crystal-test-site--balcauionut.repl.co/testpages/click-change-background.html');
 
   mainWindow.webContents.on('console-message', (e, level, message) => {
     console.log('Console:', message)
-    if (message.includes('CLICKED')) passed = true;
+    if (message.includes('CLICKED')) passedClick = true;
+    if (message.includes('KEYDOWN H')) passedKeydown = true;
+    if (message.includes('KEYUP H')) passedKeyup = true;
   })
 
   mainWindow.webContents.on('did-finish-load', async () => {
@@ -69,9 +74,17 @@ function createWindow() {
     await clickElectronSendInputEvent()
     // await clickCDP()
 
-    await timeout(300)
-    if (passed) console.log('test PASSED')
-    else console.log('test FAILED')
+    await timeout(2000)
+    if (passedClick) console.log('click PASSED')
+    else console.log('click FAILED')
+
+    pressHElectronSendInputEvent()
+    await timeout(2000)
+    if (passedKeydown) console.log('keydown PASSED')
+    else console.log('keydown FAIL')
+    if (passedKeyup) console.log('keyup PASSED')
+    else console.log('keyup FAIL')
+    
 
   })
 
@@ -117,6 +130,12 @@ function createWindow() {
     await timeout(0);
     event.type = 'mouseUp'
     mainWindow.webContents.sendInputEvent(event)
+  }
+
+  async function pressHElectronSendInputEvent() {
+    mainWindow.webContents.sendInputEvent({type: 'keyDown', keyCode: 'h'})
+    mainWindow.webContents.sendInputEvent({type: 'char', keyCode: 'h'});
+    mainWindow.webContents.sendInputEvent({type: 'keyUp', keyCode: 'h'})
   }
 
   mainWindow.on('closed', function () {

@@ -18,7 +18,7 @@ function createWindow() {
       nativeWindowOpen: true,
       nodeIntegration: false,
       nodeIntegrationInSubFrames: true,
-      offscreen: false, // try with and without OFFSCREEN
+      offscreen: true, // try with and without OFFSCREEN
       webSecurity: true
     }
   })
@@ -119,10 +119,10 @@ function createWindow() {
       type: 'mouseDown',
       clickCount: 1,
       button: 'left',
-      x: 200,
-      y: 200,
-      globalX: 200,
-      globalY: 200,
+      x: 150,
+      y: 150,
+      globalX: 150,
+      globalY: 150,
       modifiers: ['leftButtonDown']
     };
 

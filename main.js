@@ -18,8 +18,9 @@ function createWindow() {
       nativeWindowOpen: true,
       nodeIntegration: false,
       nodeIntegrationInSubFrames: true,
-      offscreen: true, // try with and without OFFSCREEN
-      webSecurity: true
+      offscreen: false, // try with and without OFFSCREEN
+      webSecurity: true,
+      frame: false
     }
   })
 
@@ -58,12 +59,21 @@ function createWindow() {
   let passedClick = false;
   let passedKeydown = false;
   let passedKeyup = false;
+  let clickCount = 0;
   mainWindow.loadURL('https://output.jsbin.com/higoxaj') // the page includes an iframe (below). the iframe has a 'click' listeners that sets body background green
   // mainWindow.loadURL('https://crystal-test-site--balcauionut.repl.co/testpages/click-change-background.html');
 
   mainWindow.webContents.on('console-message', (e, level, message) => {
     console.log('Console:', message)
-    if (message.includes('CLICKED')) passedClick = true;
+    if (message.includes('CLICKED')) {
+      clickCount++;
+      if(clickCount < 2) return; // first click is only to focus iframe, sometimes it can have correct coordinates
+      if (message === 'CLICKED|50|50') passedClick = true;
+      else {
+        passedClick = false;
+        console.log('Click had wrong coordinates!')
+      }
+    } 
     if (message.includes('KEYDOWN H')) passedKeydown = true;
     if (message.includes('KEYUP H')) passedKeyup = true;
   })
@@ -71,7 +81,10 @@ function createWindow() {
   mainWindow.webContents.on('did-finish-load', async () => {
 
     await timeout(500);
-    await clickElectronSendInputEvent()
+    await clickElectronSendInputEvent() // first one to focus frame
+    await timeout(500);
+    await clickElectronSendInputEvent() // second one to actually test
+
     // await clickCDP()
 
     await timeout(2000)
@@ -101,8 +114,8 @@ function createWindow() {
 
       let msg = {
         type: 'mousePressed', // Allowed Values: mousePressed, mouseReleased, mouseMoved, mouseWheel
-        x: 200,
-        y: 200,
+        x: 150,
+        y: 150,
         button: 'left', // Allowed Values: none, left, middle, right, back, forward
         buttons: 1, // A number indicating which buttons are pressed on the mouse when a mouse event is triggered. Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
         clickCount: 1
